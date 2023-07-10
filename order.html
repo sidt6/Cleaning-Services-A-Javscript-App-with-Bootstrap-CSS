@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Clean and Shine - Order</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script>
+      // Define the array of service days
+      var serviceDays = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+      ];
+
+      // Define the array of service options
+      var serviceOptions = ["Standard", "Deep cleaning", "Move in/out"];
+
+      $(document).ready(function () {
+        // Populate the service days dropdown box
+        var dropdown = $("#service-day");
+        $.each(serviceDays, function (index, value) {
+          dropdown.append($("<option>").text(value));
+        });
+
+        // Generate the service options checkboxes
+        var checkboxes = $("#service-options");
+        $.each(serviceOptions, function (index, value) {
+          var checkbox = $("<input>")
+            .attr("type", "checkbox")
+            .attr("name", "service-option")
+            .attr("value", value);
+          var label = $("<label>").text(value);
+          checkboxes.append(checkbox).append(label).append($("<br>"));
+        });
+
+        // Validate the form fields
+        $("form").submit(function (event) {
+          var isValid = true;
+
+          // Validate the service day
+          var serviceDay = $("#service-day").val();
+          if (serviceDay === "") {
+            $("#service-day-feedback").text("Please select a service day");
+            isValid = false;
+          } else {
+            $("#service-day-feedback").text("");
+          }
+
+          // Validate the service options
+          var serviceOptions = $("input[name='service-option']:checked");
+          if (serviceOptions.length === 0) {
+            $("#service-options-feedback").text(
+              "Please select at least one service option"
+            );
+            isValid = false;
+          } else {
+            $("#service-options-feedback").text("");
+          }
+
+          // Validate the room count
+          var roomCount = $("#room-count").val();
+          if (roomCount === "" || isNaN(roomCount) || roomCount < 1) {
+            $("#room-count-feedback").text("Please enter a valid room count");
+            isValid = false;
+          } else {
+            $("#room-count-feedback").text("");
+          }
+
+          // Validate the bathroom count
+          var bathroomCount = $("#bathroom-count").val();
+          if (
+            bathroomCount === "" ||
+            isNaN(bathroomCount) ||
+            bathroomCount < 0
+          ) {
+            $("#bathroom-count-feedback").text(
+              "Please enter a valid bathroom count"
+            );
+            isValid = false;
+          } else {
+            $("#bathroom-count-feedback").text("");
+          }
+
+          if (!isValid) {
+            event.preventDefault();
+          }
+        });
+        $("form").submit(function (event) {
+          event.preventDefault(); // Prevent the form from submitting normally
+          var isValid = true;
+
+          // Validate the form fields and update the isValid variable
+
+          if (isValid) {
+            // Calculate the total price
+            var serviceDay = $("#service-day").val();
+            var serviceOptionCount = $(
+              "input[name='service-option']:checked"
+            ).length;
+            var roomCount = parseInt($("#room-count").val());
+            var bathroomCount = parseInt($("#bathroom-count").val());
+
+            var serviceOptionPrice = 0;
+            switch (serviceOptionCount) {
+              case 1:
+                serviceOptionPrice = 0;
+                break;
+              case 2:
+                serviceOptionPrice = 10;
+                break;
+              case 3:
+                serviceOptionPrice = 20;
+                break;
+            }
+
+            var roomPrice = roomCount * 15;
+            var bathroomPrice = bathroomCount * 5;
+
+            var totalPrice = serviceOptionPrice + roomPrice + bathroomPrice;
+
+            // Display the alert with the order details and the final price
+            var alertMessage =
+              "Thank you for your order!\n\nService Day: " +
+              serviceDay +
+              "\nService Options: ";
+            $("input[name='service-option']:checked").each(function () {
+              alertMessage += $(this).val() + ", ";
+            });
+            alertMessage = alertMessage.slice(0, -2); // Remove the last comma and space
+            alertMessage +=
+              "\nNumber of Rooms: " +
+              roomCount +
+              "\nNumber of Bathrooms: " +
+              bathroomCount +
+              "\nTotal Price: $" +
+              totalPrice;
+            alert(alertMessage);
+
+            // Reset the form fields and the price display
+            $("#service-day").val("");
+            $("input[name='service-option']").prop("checked", false);
+            $("#room-count").val("");
+            $("#bathroom-count").val("");
+            $("#price").text("");
+          }
+        });
+
+        // Calculate the price
+        $("form").on("input", function () {
+          var serviceDay = $("#service-day").val();
+          var serviceOptionCount = $(
+            "input[name='service-option']:checked"
+          ).length;
+          var roomCount = parseInt($("#room-count").val());
+          var bathroomCount = parseInt($("#bathroom-count").val());
+
+          var serviceOptionPrice = 0;
+          switch (serviceOptionCount) {
+            case 1:
+              serviceOptionPrice = 0;
+              break;
+            case 2:
+              serviceOptionPrice = 10;
+              break;
+            case 3:
+              serviceOptionPrice = 20;
+              break;
+          }
+
+          var roomPrice = roomCount * 15;
+          var bathroomPrice = bathroomCount * 5;
+
+          var totalPrice = serviceOptionPrice + roomPrice + bathroomPrice;
+
+          $("#price").text("$" + totalPrice);
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <b><a class="navbar-brand" href="#">Clean and Shine</a></b>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="index.html"
+              >Home <span class="sr-only">(current)</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="products.html">Products</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="order.html">Order</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="contacts.html">Contacts</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="container my-4">
+      <h1>Order</h1>
+      <p>Please fill in the form below to place an order.</p>
+
+      <form>
+        <div class="form-group">
+          <label for="service-day">Service Day:</label>
+          <select class="form-control" id="service-day">
+            <option value="">Select a service day</option>
+          </select>
+          <div id="service-day-feedback" class="invalid-feedback"></div>
+        </div>
+        Start Time:
+        <input type="time" name="" /> <br />
+        End time:
+        <input type="time" name="" /> <br />
+
+        <div class="form-group">
+          <label for="service-options">Service Options:</label>
+          <div id="service-options"></div>
+          <div id="service-options-feedback" class="invalid-feedback"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="room-count">Room Count:</label>
+          <input
+            type="number"
+            class="form-control"
+            id="room-count"
+            min="1"
+            required
+          />
+          <div id="room-count-feedback" class="invalid-feedback"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="bathroom-count">Bathroom Count:</label>
+          <input
+            type="number"
+            class="form-control"
+            id="bathroom-count"
+            min="0"
+            required
+          />
+          <div id="bathroom-count-feedback" class="invalid-feedback"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Total Price:</label>
+          <p id="price">$0</p>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  </body>
+  <center>
+    <p>&copy; 2023 Clean and Shine <br />Siddharth</p>
+  </center>
+</html>
